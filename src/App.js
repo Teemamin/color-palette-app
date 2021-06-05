@@ -8,6 +8,7 @@ import {
   Link
 } from "react-router-dom";
 import Palettelist from './Palettelist'
+import SingleColorPalette from './SingleColorPalette'
 
 
 class App extends Component {
@@ -23,11 +24,15 @@ class App extends Component {
     // console.log(generatePalette(seedColors[3]))
       return (
         <Switch>
-          <Route exact  path='/' render={()=><Palettelist palettes={seedColors}/>} />
+          <Route exact  path='/' render={(routeProps)=><Palettelist palettes={seedColors} {...routeProps}/>} />
           <Route exact  path='/palette/:id' 
             render={(routeProps)=>
             <Palette palette={generatePalette(this.findPallete(routeProps.match.params.id))}/>} 
           />
+          <Route exact  path='/palette/:paletteId/:colorId' 
+            render={()=><SingleColorPalette/>}
+          /> 
+
 
         </Switch>
         // <div className="">

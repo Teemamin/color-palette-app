@@ -42,9 +42,12 @@ const styles = {
 
 class Palettelist extends Component {
 
+    goToPalette = (id)=>{
+        this.props.history.push(`/palette/${id}`)
+    }
     render(){
       let foundColor = this.props.palettes.map(p=>(
-          <Minipalette {...p}/>))
+          <Minipalette {...p} handleClick={()=>this.goToPalette(p.id)}/>))
 
         return(
             <div className={this.props.classes.root}>
