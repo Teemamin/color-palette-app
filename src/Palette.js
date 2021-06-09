@@ -4,6 +4,8 @@ import Slider, { Range } from 'rc-slider';
 import 'rc-slider/assets/index.css';
 import './Palette.css'
 import Navbar from './Navbar'
+import PaletteFooter from './PaletteFooter'
+
 
 class Palette extends Component{
 
@@ -25,20 +27,26 @@ class Palette extends Component{
             id ={color.id}
             key={color.id}
             paletteId ={id} 
+            showingFullPalette={true}
          />)
         return(
             <div className='Palette'>
                 {/* Nabar goes here*/}
-               <Navbar level={level} changeLevel={this.changeLevel} handleChange={this.changeFormat}/>
+               <Navbar level={level} changeLevel={this.changeLevel}
+                handleChange={this.changeFormat}
+                showingAllColors
+                />
                 <div className='Palette-colors'>
                      {/* bunch of color goes here*/}
                      {colorBoxes}
                 </div>
                 {/* Footer goes here*/}
-                <footer className='Palette-footer'>
+                {/* <footer className='Palette-footer'>
                     {paletteName}
                     <span className='emoji'>{emoji}</span>
-                </footer>
+                </footer> */}
+             <PaletteFooter paletteName={paletteName} emoji={emoji} />
+
             </div>
         )
     }

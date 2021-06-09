@@ -35,6 +35,7 @@ class Navbar extends Component {
                 <div className='logo'>
                     <Link to='/'>Color Picker</Link>
                 </div>
+                {this.props.showingAllColors && (
                 <div className='slider-container'>
                     <span>Level: {level}</span>
                     <div className='slider'>
@@ -44,12 +45,12 @@ class Navbar extends Component {
                         onAfterChange={changeLevel} //it will call changeLvel wenevr the slider value chngs and pass on the new val
                         /> 
                     </div>
-                </div>
+                </div>)}
                <div className='select-container'>
                    <Select value={this.state.format} onChange={this.handleChange}>
                        <MenuItem value='hex'>hex -#ffff</MenuItem>
                        <MenuItem value='rgb'>rgb =--rgb(10,255,324)</MenuItem>
-                       <MenuItem value='rgba'>rgb =--rgba(10,255,324,1.0)</MenuItem>
+                       <MenuItem value='rgba'>rgba =--rgba(10,255,324,1.0)</MenuItem>
                    </Select>
                </div>
                <Snackbar
