@@ -1,11 +1,13 @@
 import React,{Component} from 'react'
+import styles from './styles/PaletteStyles'
+import { withStyles } from "@material-ui/styles";
 import ColorBox from './ColorBox'
 import Slider, { Range } from 'rc-slider';
 import 'rc-slider/assets/index.css';
-import './Palette.css'
 import Navbar from './Navbar'
 import PaletteFooter from './PaletteFooter'
 
+  
 
 class Palette extends Component{
 
@@ -30,13 +32,13 @@ class Palette extends Component{
             showingFullPalette={true}
          />)
         return(
-            <div className='Palette'>
+            <div className={this.props.classes.Palette}>
                 {/* Nabar goes here*/}
                <Navbar level={level} changeLevel={this.changeLevel}
                 handleChange={this.changeFormat}
                 showingAllColors
                 />
-                <div className='Palette-colors'>
+                <div className={this.props.classes.colors}>
                      {/* bunch of color goes here*/}
                      {colorBoxes}
                 </div>
@@ -52,4 +54,4 @@ class Palette extends Component{
     }
 }
 
-export default Palette
+export default  withStyles(styles) (Palette)
