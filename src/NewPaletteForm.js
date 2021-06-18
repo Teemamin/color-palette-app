@@ -85,9 +85,27 @@ class NewPaletteForm extends Component {
     state = {
         open: true,
         currentColor : 'green',
-        colors : ['yellow','#ED1616','blue'],
+        colors : [],
         newName : ''
       };
+
+    componentDidMount() {
+    // custom rule will have name 'isPasswordMatch'
+        ValidatorForm.addValidationRule('isColorNameUnique', (value) => 
+            //value will be whtvr is in the validtr input filed
+            //every() method tests whether all elements in the array "name" is not thesame as the passed value
+            // every() returns a boolean 
+            this.state.colors.every(
+                ({name})=> name.toLowerCase() !== value.toLowerCase()
+            )
+        );
+        ValidatorForm.addValidationRule('isColorUnique', (value) => 
+            this.state.colors.every(
+                ({color})=> color !== this.state.currentColor
+            )
+    );
+
+    }
     
       handleDrawerOpen = () => {
         this.setState({ open: true });
@@ -102,7 +120,11 @@ class NewPaletteForm extends Component {
       }
 
       handleAddNewColor = ()=>{
-        this.setState({colors:[...this.state.colors,this.state.currentColor]})
+        const newColor = {
+            color : this.state.currentColor,
+            name : this.state.newName
+        }
+        this.setState({colors:[...this.state.colors,newColor],newName:''})
           
       }
       handlenewNameChange = (event) => {
@@ -110,8 +132,16 @@ class NewPaletteForm extends Component {
         this.setState({ newName });
         }
 
-      handleSubmit = () => {
-        // your submit logic
+     handleSavePalette = () => {
+        let newName = 'Test Palette'
+        const newPalette = {
+            paletteName : newName,
+            id : newName.toLocaleLowerCase().replace(/ /g, '-'),
+            colors : this.state.colors
+        }
+        this.props.savePalette(newPalette)
+        //will redirect to /
+        this.props.history.push('/')
         }
     
       render() {
@@ -123,6 +153,7 @@ class NewPaletteForm extends Component {
             <CssBaseline />
             <AppBar
               position="fixed"
+              color='default'
               className={classNames(classes.appBar, {
                 [classes.appBarShift]: open,
               })}
@@ -139,6 +170,7 @@ class NewPaletteForm extends Component {
                 <Typography variant="h6" color="inherit" noWrap>
                   Persistent drawer
                 </Typography>
+                <Button variant="contained" color="primary" onClick={this.handleSavePalette}>Save Palette</Button>
               </Toolbar>
             </AppBar>
             <Drawer
@@ -164,20 +196,20 @@ class NewPaletteForm extends Component {
                 <ChromePicker color={this.state.currentColor} onChangeComplete={(newColor)=>this.handleUpdateCurrentColor(newColor)}/>
                 <ValidatorForm
                     ref="form"
-                    onSubmit={this.handleSubmit}
+                    onSubmit={this.handleAddNewColor}
                     onError={errors => console.log(errors)}
                 >
                     <TextValidator
-                        label="New Name"
                         onChange={this.handlenewNameChange}
                         name="newName"
                         value={newName}
-                        validators={['required', 'isEmail']}
-                        errorMessages={['this field is required', 'email is not valid']}
+                        validators={['required', 'isColorNameUnique', 'isColorUnique']}
+                        errorMessages={
+                            ['this field is required', 'Color name must be unique','color already used']}
                     />
                     <Button variant="contained" color="primary" 
                     style={{backgroundColor:this.state.currentColor}}
-                    onClick={this.handleAddNewColor}
+                    type='submit'
                     
                 >
                     Add color
@@ -194,7 +226,9 @@ class NewPaletteForm extends Component {
             >
               <div className={classes.drawerHeader} />
               
-                  {this.state.colors.map(color=><DraggerableColorBoxes color={color}/>)}
+                  {this.state.colors.map(color=><DraggerableColorBoxes color={color.color}
+                    name={color.name}
+                  />)}
             
             </main>
           </div>
