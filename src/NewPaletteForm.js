@@ -19,8 +19,14 @@ import Button from '@material-ui/core/Button';
 import { ValidatorForm, TextValidator} from 'react-material-ui-form-validator';
 import DraggerableColorBoxes from './DraggerableColorBoxes'
 import DraggerableColorList from './DraggerableColorList'
+import PaletteFormNav from './PaletteFormNav'
 import { arrayMove } from "react-sortable-hoc";
 import { ChromePicker } from 'react-color';
+import {
+  Switch,
+  Route,
+  Link
+} from "react-router-dom";
 
 const drawerWidth = 340;
 
@@ -84,12 +90,14 @@ const styles = theme => ({
 
 
 class NewPaletteForm extends Component {
+  static defaultProps ={
+    maxColors : 20
+  }
     state = {
         open: true,
         currentColor : 'green',
-        colors : [],
-        newColorName : '',
-        newPaletteName : ''
+        colors : this.props.palettes[0].colors,//to have a starter palette displayed
+        newColorName : ''
       };
 
     componentDidMount() {
@@ -139,11 +147,10 @@ class NewPaletteForm extends Component {
         this.setState({[event.target.name] : event.target.value });
         }
 
-     handleSubmit = () => {
-        let newName = this.state.newPaletteName
+     handleSubmit = (newPaletteName) => {
         const newPalette = {
-            paletteName : newName,
-            id : newName.toLocaleLowerCase().replace(/ /g, '-'),
+            paletteName : newPaletteName,
+            id : newPaletteName.toLocaleLowerCase().replace(/ /g, '-'),
             colors : this.state.colors
         }
         this.props.savePalette(newPalette)
@@ -155,6 +162,19 @@ class NewPaletteForm extends Component {
           colors : this.state.colors.filter(color=> color.name !== colorName)
         })
       }
+      clearColors = ()=>{
+        this.setState({colors: []})
+      }
+      addRandomColor = ()=>{
+        //pick random color from exisiting palettes
+        const allColors = this.props.palettes.map(p=>p.colors).flat()
+        let rand = Math.floor(Math.random()*allColors.length)
+        let randomColor = allColors[rand]
+        this.setState({colors:[...this.state.colors,randomColor]})
+        // console.log(randomColor)
+        // console.log(allColors)
+
+      }
       onSortEnd = ({oldIndex, newIndex}) => {
         this.setState(({colors}) => ({
           //arrayMove is a method that comes with the dragerable package
@@ -162,46 +182,15 @@ class NewPaletteForm extends Component {
         }));
       };
       render() {
-        const { classes, theme } = this.props;
-        const { open,newColorName,newPaletteName } = this.state;
-    
+        const { classes, theme, maxColors,palettes } = this.props;
+        const { open,newColorName,newPaletteName,colors } = this.state;
+        const paletteIsFull = colors.length >= maxColors;
         return (
           <div className={classes.root}>
-            <CssBaseline />
-            <AppBar
-              position="fixed"
-              color='default'
-              className={classNames(classes.appBar, {
-                [classes.appBarShift]: open,
-              })}
-            >
-              <Toolbar disableGutters={!open}>
-                <IconButton
-                  color="inherit"
-                  aria-label="Open drawer"
-                  onClick={this.handleDrawerOpen}
-                  className={classNames(classes.menuButton, open && classes.hide)}
-                >
-                  <MenuIcon />
-                </IconButton>
-                <Typography variant="h6" color="inherit" noWrap>
-                  Persistent drawer
-                </Typography>
-                <ValidatorForm onSubmit={this.handleSubmit}>
-                  <TextValidator
-                      onChange={this.handleChange}
-                      label = 'Palette Name'
-                      name="newPaletteName"
-                      value={newPaletteName}
-                      validators={['required', 'isPaletteNameUnique']}
-                      errorMessages={['enter PaletteName','Name already taken']}
-                    
-                    />
-                  <Button variant="contained" color="primary" type='submit'>Save Palette</Button>
-
-                </ValidatorForm>
-              </Toolbar>
-            </AppBar>
+           <PaletteFormNav classes={classes} open={this.state.open} palettes={palettes}
+            handleSubmit={this.handleSubmit}
+            handleDrawerOpen={this.handleDrawerOpen}
+            />
             <Drawer
               className={classes.drawer}
               variant="persistent"
@@ -220,8 +209,11 @@ class NewPaletteForm extends Component {
               <Typography variant='h5'>Design Your Color picker</Typography>
               
               <div>
-                <Button variant="contained" color="secondary">Clear Palette</Button>
-                <Button variant="contained" color="primary">Random color</Button>
+                <Button variant="contained" color="secondary" onClick={this.clearColors}>Clear Palette</Button>
+                <Button variant="contained" color="primary"
+                  onClick={this.addRandomColor}
+                  disabled={paletteIsFull}
+                >Random color</Button>
              </div>
                 <ChromePicker color={this.state.currentColor} onChangeComplete={(newColor)=>this.handleUpdateCurrentColor(newColor)}/>
                 <ValidatorForm
@@ -238,11 +230,11 @@ class NewPaletteForm extends Component {
                             ['this field is required', 'Color name must be unique','color already used']}
                     />
                     <Button variant="contained" color="primary" 
-                    style={{backgroundColor:this.state.currentColor}}
+                    style={{backgroundColor: paletteIsFull? 'grey' : this.state.currentColor}}
                     type='submit'
-                    
-                >
-                    Add color
+                    disabled={paletteIsFull}>
+                       {paletteIsFull ? 'Palette is full ' : 'Add color' }
+                
                 </Button>
                 </ValidatorForm>
                 
