@@ -1,6 +1,16 @@
 import sizes from "./sizes"
 import bg from "./bg.svg";
 export default {
+//using global u can use the cls styles anywhere, it doenst get prefixed with JSX
+  "@global": {
+    ".fade-exit": {
+      opacity: 1
+    },
+    ".fade-exit-active": {
+      opacity: 0,
+      transition: "opacity 500ms ease-out"
+    }
+  },  
     root: {
       backgroundColor: "blue",
       height: "100vh",
