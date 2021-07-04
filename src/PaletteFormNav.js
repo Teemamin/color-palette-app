@@ -50,7 +50,8 @@ class PaletteFormNav extends Component {
                   color="inherit"
                   aria-label="Open drawer"
                   onClick={this.props.handleDrawerOpen}
-                  className={classNames(classes.menuButton, open && classes.hide)}
+                  // apply hide class if open is true
+                  className={classNames(classes.menuButton, {[classes.hide]:open})}
                 >
                   <MenuIcon />
                 </IconButton>

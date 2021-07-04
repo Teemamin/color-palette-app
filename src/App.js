@@ -10,11 +10,12 @@ import {
 } from "react-router-dom";
 import Palettelist from './Palettelist'
 import SingleColorPalette from './SingleColorPalette'
+const savedPalettes = JSON.parse(window.localStorage.getItem("palettes"));
 
 
 class App extends Component {
   state={
-    palettes : seedColors
+    palettes: savedPalettes || seedColors
   }
 
 
@@ -26,7 +27,15 @@ class App extends Component {
   }
   savePalette = (newPalette)=>{
     // console.log(newPalette)
-    this.setState({palettes:[...this.state.palettes,newPalette]})
+    this.setState({palettes:[...this.state.palettes,newPalette]},this.syncLocalStorage)
+  }
+
+  syncLocalStorage() {
+    //save palettes to local storage
+    window.localStorage.setItem(
+      "palettes",
+      JSON.stringify(this.state.palettes)
+    );
   }
   render(){
     // console.log(generatePalette(seedColors[3]))
