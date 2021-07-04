@@ -18,7 +18,11 @@ class Palettelist extends Component {
     }
     render(){
       let foundColor = this.props.palettes.map(p=>(
-          <Minipalette {...p} handleClick={()=>this.goToPalette(p.id)}/>))
+          <Minipalette {...p} handleClick={()=>this.goToPalette(p.id)}
+          handleDelete={this.props.deletePalette}
+          key={p.id}
+          id={p.id}
+        />))
 
         return(
             <div className={this.props.classes.root}>

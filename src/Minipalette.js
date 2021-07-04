@@ -1,27 +1,41 @@
-import React from 'react'
+import React,{Component} from 'react'
 import {
   Switch,
   Route,
   Link
 } from "react-router-dom";
 import styles from './styles/MiniPaletteStyles'
+import DeleteIcon from "@material-ui/icons/Delete";
 import { withStyles } from '@material-ui/core/styles';
 
-function Minipalette(props){
-    const {classes,paletteName,emoji,colors} = props;
-    // console.log(classes)
-    const miniColorBoxes = colors.map(color=>(
-    <div className={classes.miniColor} style={{backgroundColor:color.color}} key={color.name}
-    ></div>))
-    return (
-        <div className={classes.root} onClick={props.handleClick}>
-            <div className={classes.colors}>
-                {/* Mini color boxes */}
-                {miniColorBoxes}
+class Minipalette extends Component{
+
+    deletePalette=(e)=> {
+        e.stopPropagation();
+        this.props.handleDelete(this.props.id);
+      }
+
+    render(){
+        const {classes,paletteName,emoji,colors} = this.props;
+        const miniColorBoxes = colors.map(color=>(
+        <div className={classes.miniColor} style={{backgroundColor:color.color}} key={color.name}
+        ></div>))
+        return (
+            <div className={classes.root} onClick={this.props.handleClick}>
+                
+                    <DeleteIcon
+                    className={classes.deleteIcon}
+                    style={{ transition: "all 0.3s ease-in-out" }}
+                    onClick={this.deletePalette}
+                    />
+                <div className={classes.colors}>
+                    {/* Mini color boxes */}
+                    {miniColorBoxes}
+                </div>
+                <h5 className={classes.title}>{paletteName}<span className={classes.emoji}>{emoji}</span></h5>
             </div>
-            <h5 className={classes.title}>{paletteName}<span className={classes.emoji}>{emoji}</span></h5>
-        </div>
-    )
+        )
+}
 }
 
 //to apply the material UI styles you'll need to export the component like below
